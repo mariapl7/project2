@@ -24,7 +24,10 @@ state.
 ```
 git clone https://git@github.com:mariapl7/project2.git
 ```
-
+2. Установите зависимости:
+```
+pip install -r requirements.txt
+```
 ## Использование:
 
 1. Откройте приложение в вашем веб-браузере.
