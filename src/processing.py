@@ -4,7 +4,7 @@ info_state = [
              {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
              {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}
               ]
-def filter_by_date(list_info: list[str], state_id='EXECUTED') -> str:
+def filter_by_state(list_info: list[str], state_id='EXECUTED') -> str:
     """Функция возвращает новый список словарей содержащий только те словари, у которых ключ
 state"""
     filter_state = []
