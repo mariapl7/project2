@@ -1,3 +1,4 @@
+import pytest
 from src.masks import get_mask_card_number, get_mask_account
 
 
@@ -5,7 +6,7 @@ from src.masks import get_mask_card_number, get_mask_account
                                                    (" ", None),
                                                    ("700079228968", None),
                                                    ])
-def test_get_mask_card_number(card_number: str, expected) -> None:
+def test_get_mask_card_number(card_number: str, expected) -> str:
     """Функция тестирования для функции get_mask_card_number"""
     assert get_mask_card_number(card_number) == expected
 

@@ -1,3 +1,4 @@
+import pytest
 from src.processing import filter_by_state, sort_by_date
 
 
@@ -6,7 +7,7 @@ from src.processing import filter_by_state, sort_by_date
                                                  {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
                                                  {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}
                                                  ])
-def test_filter_by_state(list_info, state_id, expected) -> None:
+def test_filter_by_state(list_info, state_id, expected):
     """Функция тестирования для функции filter_by_state"""
     assert filter_by_state(list_info, state_id) == expected
 
@@ -16,6 +17,6 @@ def test_filter_by_state(list_info, state_id, expected) -> None:
                                                      {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
                                                      {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}
                                                      ])
-def test_sort_by_date(list_info, sort_reverse, expected) -> None:
+def test_sort_by_date(list_info, sort_reverse, expected):
     """Функция тестирование функции sort_by_date"""
     assert sort_by_date(list_info, sort_reverse) == expected
