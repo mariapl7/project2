@@ -4,17 +4,19 @@ info_state = [
              {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
              {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}
               ]
-def filter_by_state(list_info: str, state_id: str) -> str:
+
+
+def filter_by_state(info_list: list[str], state="EXECUTED") -> str:
     """Функция возвращает новый список словарей содержащий только те словари, у которых ключ
 state"""
-    filter_state = []
-    for key in list_info:
-        if key.get('state') == state_id:
-            filter_state.append(key)
-    return str(filter_state)
+    filtered_list = []
+    for i in info_list:
+        if i == state:
+            filtered_list.append(i)
+    return str(filtered_list)
 
 
-def sort_by_date(list_info: list[str], sort_reverse: bool = True) -> str:
+def sort_by_date(info_list: list[str], sort_reverse: bool = True) -> str:
     """Функция возвращает новый список, отсортированный по дате"""
-    sorted_list_info = sorted(list_info, key=info_state('date'), reverse=sort_reverse)
-    return str(sorted_list_info)
+    sorted_list: list[str] = sorted(info_list, key=lambda x: x("date"), reverse=sort_reverse)
+    return str(sorted_list)
