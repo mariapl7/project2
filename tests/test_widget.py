@@ -7,6 +7,6 @@ from src.widget import get_date
                                             ("2024-03-11", "11.03.2024"),
                                             ("2024-030211554478411", "Неверно задана дата")
                                             ])
-def test_get_date(data: str, expected) -> None:
+def test_get_date(data: str, expected) -> str | None:
     """Функция тестирования для функции get_date"""
     assert test_get_date(data) == expected

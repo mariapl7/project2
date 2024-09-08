@@ -16,7 +16,7 @@ state"""
     return str(filtered_list)
 
 
-def sort_by_date(info_list: list[str], sort_reverse: bool = True) -> str:
+def sort_by_date(date_list: list[str], sort_reverse: bool = True) -> str:
     """Функция возвращает новый список, отсортированный по дате"""
-    sorted_list: list[str] = sorted(info_list, key=lambda x: x("date"), reverse=sort_reverse)
+    sorted_list: list[str] = sorted(date_list, key=lambda x: x("date"), reverse=sort_reverse)
     return str(sorted_list)
