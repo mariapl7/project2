@@ -2,7 +2,7 @@ import pytest
 from src.masks import get_mask_card_number, get_mask_account
 
 
-@pytest.mark.parametrize("card_number, expected", [("7000792289606361", "7000 70** **** 6361"),
+@pytest.mark.parametrize("card_number, expected", [("7000792289606361", "7000 79** **** 6361"),
                                                    (" ", None),
                                                    ("700079228968", None),
                                                    ],)
