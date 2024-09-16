@@ -8,14 +8,15 @@ def filter_by_currency(transactions: list[dict], currency: str) -> list:
         return list('Список пустой!')
 
 
-usd_transactions: list = filter_by_currency([], "RUB")
-for _ in range(2):
-    print(next(usd_transactions))
+def transaction_descriptions(transactions: list):
+    """Функция возвращает описание каждой операции поочереди"""
+    for transaction in transactions:
+        yield transaction.get("description")
 
 
-transaction_descriptions = [x for my_list in range(5) for x in [my_list, my_list] if my_list % 2 == 0]
-# возвращает описание каждоц операции поочереди
-
-
-card_number_generator = [x for card_number in range(10) for x in [card_number, card_number] if card_number % 2 == 0]
-# сгенерирует номера карт в заданном диапазоне
+def card_number_generator(start, stop):
+    """Функция генерирует номера карт в заданном диапазоне"""
+    for number in range(start, stop + 1):
+        number_str = f"{number:016}"
+        formated_number = f"{number_str[:4]} {number_str[4:8]} {number_str[8:12]} {number_str[12:]}"
+        yield formated_number
