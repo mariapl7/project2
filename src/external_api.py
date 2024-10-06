@@ -1,24 +1,49 @@
-from typing import Any
 import requests
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-API_KEY = os.getenv('API_KEY')
 
 
-def transaction_amount(transactions: Any) -> float:
-    """Функция принимает на вход транзакцию и возвращает сумму транзакции в рублях"""
-    amount = transactions["operationAmount"]["amount"]
-    currency = transactions["operationAmount"]["currency"]["code"]
-    if currency == "RUB":
-        return amount
-    else:
-        url = f"https://apilayer.com/exchangerates_data-api/convers?from={currency}&amount={amount}"
-        headers = {
-            "apikey": "API_KEY"
-        }
-        responce = requests.get(url, headers=headers)
-        # status_code = responce.status_code
-        # print(f"Статус кода: {status_code}")
-        return responce.json()
+def convert_to_rub(transaction):
+    """
+    Конвертирует сумму транзакции в рубли.
+
+    Args:
+        transaction (dict): Словарь с полями 'amount' и 'currency'.
+
+    Returns:
+        float: Сумма транзакции в рублях. Если валюта не USD или EUR,
+                возвращает сумму без изменений в рублях, если это уже рубли,
+                или None в других случаях.
+    """
+    amount = transaction.get('amount')
+    currency = transaction.get('currency')
+
+    if currency == 'RUB':
+        return float(amount)  # Если уже в рублях, просто возвращаем сумму
+
+    # Получение курса валют
+    api_key = 'API_КЛЮЧ'  # Замените на ваш API ключ
+    url = f'https://api.apilayer.com/exchangerates_data/latest?base=RUB&symbols=USD,EUR'
+    headers = {
+        'apikey': api_key,
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        rates = response.json().get('rates', {})
+
+        # Конвертация суммы в рубли
+        if currency == 'USD':
+            return float(amount) * rates.get('USD', 1)  # Если курс существующий, конвертируем
+        elif currency == 'EUR':
+            return float(amount) * rates.get('EUR', 1)  # Если курс существующий, конвертируем
+
+    return None  # Если валюта не поддерживается или не удалось получить курс
+
+
+transaction_usd = {'amount': 100, 'currency': 'USD'}
+transaction_eur = {'amount': 150, 'currency': 'EUR'}
+transaction_rub = {'amount': 1000, 'currency': 'RUB'}
+
+print(convert_to_rub(transaction_usd))
+print(convert_to_rub(transaction_eur))
+print(convert_to_rub(transaction_rub))
