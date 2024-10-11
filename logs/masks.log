@@ -1,0 +1,59 @@
+import logging
+import os
+
+# Создаем директорию logs, если она не существует
+log_directory = 'logs'
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory)
+
+# Настройка пути и именования файла лога
+log_file_path = os.path.join(log_directory, 'application.log')
+
+# Конфигурация логгера
+logging.basicConfig(
+    level=logging.DEBUG,  # Уровень логирования
+    format='%(asctime)s - %(module)s - %(levelname)s - %(message)s',  # Формат записи
+    handlers=[
+        logging.FileHandler(log_file_path, mode='w'),  # 'w' для перезаписи файла
+        logging.StreamHandler()  # Вывод в консоль
+    ]
+)
+
+def get_mask_card_number(card_number: str) -> str | None:
+    """Функция маскировки номера банковской карты"""
+    if card_number.isdigit() and len(card_number) == 16:
+        masked_number = f"{card_number[:4]} {card_number[4:6]}<strong> </strong><strong> {card_number[-4:]}"
+        logging.info(f"Успешная маскировка номера карты: {masked_number}")
+        return masked_number
+    else:
+        logging.error("Ошибка маскировки: передан неверный номер карты.")
+        return None
+
+
+# Создаем директорию logs, если она не существует
+log_directory = 'logs'
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory)
+
+# Настройка пути и именования файла лога
+log_file_path = os.path.join(log_directory, 'application.log')
+
+# Конфигурация логгера
+logging.basicConfig(
+    level=logging.DEBUG,  # Уровень логирования
+    format='%(asctime)s - %(module)s - %(levelname)s - %(message)s',  # Формат записи
+    handlers=[
+        logging.FileHandler(log_file_path, mode='w'),  # 'w' для перезаписи файла
+        logging.StreamHandler()  # Вывод в консоль
+    ]
+)
+
+def get_mask_account(bank_account: str) -> str | None:
+    """Функция маскировки номера банковского счета"""
+    if bank_account.isdigit() and len(bank_account) == 20:
+        masked_account = "<strong>" + bank_account[-4:]  # Маскируем все, кроме последних 4 цифр
+        logging.info(f"Успешная маскировка номера банковского счета: {masked_account}")
+        return masked_account
+    else:
+        logging.error("Ошибка маскировки: передан неверный номер банковского счета.")
+        return None
