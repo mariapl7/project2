@@ -1,53 +1,48 @@
-import pytest
-
-from unittest.mock import patch
+import re
+from unittest.mock import patch, MagicMock
+from collections import Counter
 from src.transaction import filter_transactions, categorize_transactions
+from src.transaction import count_operations_by_category, count_description_occurrences
 
 
-@patch('transaction_filter.filter_transactions')
-def test_filter_transactions(mock_filter_transactions):
-    # Предположим, что mock возвращает список транзакций
-    mock_filter_transactions.return_value = [
-        {'id': 1, 'description': 'Оплата за газ', 'amount': -300},
-        {'id': 3, 'description': 'Оплата интернета', 'amount': -500}
+@patch('re.compile')
+def test_filter_transactions(self, mock_compile):
+    mock_pattern = MagicMock()
+    mock_compile.return_value = mock_pattern
+    mock_pattern.search.side_effect = [True, False, True, False]  # Эмуляция результатов поиска
+
+    result = filter_transactions(self.transactions, 'Buy')
+    expected = [
+        {'description': 'Buy groceries', 'category': 'Food'},
+        {'description': 'Buy a new phone', 'category': 'Electronics'}
     ]
-
-    transactions = [
-        {'id': 1, 'description': 'Оплата за газ', 'amount': -300},
-        {'id': 2, 'description': 'Перевод зарплаты', 'amount': 1000},
-        {'id': 3, 'description': 'Оплата интернета', 'amount': -500},
-        {'id': 4, 'description': 'Купон на скидку', 'amount': 50},
-    ]
-
-    result = filter_transactions(transactions, 'оплата')
-
-    assert len(result) == 2  # Проверяем, что нашли 2 совпадения
-    assert result[0]['id'] in [1, 3]
-    assert result[1]['id'] in [1, 3]
-    assert result[0]['id'] != result[1]['id']  # Убедитесь, что они разные
+    self.assertEqual(result, expected)
+    mock_compile.assert_called_once_with('Buy', re.IGNORECASE)
+    self.assertEqual(mock_pattern.search.call_count, 4)  # Проверяем, что search вызван 4 раза
 
 
-@patch('transaction_filter.categorize_transactions')
-def test_categorize_transactions(mock_categorize_transactions):
-    # Установка возврата замокированной функции
-    mock_categorize_transactions.side_effect = [
-        {'оплата за газ': 1, 'оплата интернета': 1},  # ожидание для 'оплата'
-        {'перевод зарплаты': 1},                      # ожидание для 'перевод'
-        {}                                             # ожидание для 'неизвестная категория'
-    ]
+def test_count_operations_by_category(self):
+    result = count_operations_by_category(self.transactions, ['Food', 'Books'])
+    expected = {'Food': 3, 'Books': 1}
+    self.assertEqual(result, expected)
 
-    transactions = [
-        {'id': 1, 'description': 'Оплата за газ', 'amount': -300},
-        {'id': 2, 'description': 'Перевод зарплаты', 'amount': 1000},
-        {'id': 3, 'description': 'Оплата интернета', 'amount': -500},
-        {'id': 4, 'description': 'Купон на скидку', 'amount': 50},
-    ]
 
-    result1 = categorize_transactions(transactions, 'оплата')
-    assert result1 == {'оплата за газ': 1, 'оплата интернета': 1}
+@patch('collections.Counter')
+def test_categorize_transactions(self, mock_counter):
+    mock_counter.return_value = Counter({'a new phone': 1, 'groceries': 1})
+    result = categorize_transactions(self.transactions, 'buy')
+    expected = {'buy groceries': 1, 'buy a new phone': 1}
+    self.assertEqual(result, expected)
+    mock_counter.assert_called_once()  # Проверяем, что Counter был вызван
 
-    result2 = categorize_transactions(transactions, 'перевод')
-    assert result2 == {'перевод зарплаты': 1}
 
-    result3 = categorize_transactions(transactions, 'неизвестная категория')
-    assert result3 == {}
+@patch('re.compile')
+def test_count_description_occurrences(self, mock_compile):
+    mock_pattern = MagicMock()
+    mock_compile.return_value = mock_pattern
+    mock_pattern.search.side_effect = [True, False, True, False]  # Эмуляция результатов поиска
+
+    result = count_description_occurrences(self.transactions, 'out')
+    expected = {'dinner out': 1}
+    self.assertEqual(result, expected)
+    mock_compile.assert_called_once_with('out', re.IGNORECASE)

@@ -1,6 +1,10 @@
 import json
 import csv
 import pandas as pd
+from src.utils import load_transactions_from_json
+from src.read_financial_transactions import read_financial_transactions_csv
+from src.read_financial_transactions import read_financial_transactions_excel
+from src.processing import filter_by_state
 
 
 def read_transactions_from_json(file_path):
@@ -25,9 +29,9 @@ def filter_transactions(transactions, status):
 def main():
     print("Привет! Добро пожаловать в программу работы с банковскими транзакциями.")
     print("Выберите необходимый пункт меню:")
-    print("1. Получить информацию о транзакциях из JSON-файла")
-    print("2. Получить информацию о транзакциях из CSV-файла")
-    print("3. Получить информацию о транзакциях из XLSX-файла")
+    print(f"1. Получить информацию о транзакциях из: {load_transactions_from_json}")
+    print(f"2. Получить информацию о транзакциях из: {read_financial_transactions_csv}")
+    print(f"3. Получить информацию о транзакциях из: {read_financial_transactions_excel}")
 
     choice = input("Пользователь: ")
 
@@ -46,10 +50,10 @@ def main():
 
     while True:
         print("Введите статус, по которому необходимо выполнить фильтрацию.")
-        print("Доступные для фильтровки статусы: EXECUTED, CANCELED, PENDING")
+        print(f"Доступные для фильтровки статусы: {filter_by_state}")
         status = input("Пользователь: ")
 
-        if status.upper() not in ['EXECUTED', 'CANCELED', 'PENDING']:
+        if status.upper() not in ['filter_by_state']:
             print(f"Статус операции \"{status}\" недоступен.")
             continue
 
@@ -66,9 +70,9 @@ def main():
             sort_order = input("Отсортировать по возрастанию или по убыванию? ").strip().lower()
             if sort_order.startswith('у'):
                 filtered_transactions.sort(
-                    key=lambda t: t['date'])  # предполагается, что дата в формате правильного типа
+                    key=lambda t: t['sort_by_date'])  # предполагается, что дата в формате правильного типа
             else:
-                filtered_transactions.sort(key=lambda t: t['date'], reverse=True)
+                filtered_transactions.sort(key=lambda t: t['sort_by_date'], reverse=True)
 
         currency_filter = input("Выводить только рублевые транзакции? Да/Нет: ").strip().lower()
 
