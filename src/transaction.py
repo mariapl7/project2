@@ -13,31 +13,8 @@ def filter_transactions(transactions, search_string):
     return filtered_transactions
 
 
-def count_operations_by_category(transactions, categories):
-    category_count = {category: 0 for category in categories}
-    for transaction in transactions:
-        category = transaction.get('category', '')
-        if category in category_count:
-            category_count[category] += 1
-    return category_count
-
-
-def categorize_transactions(transactions, search_term):
-    category_count = {}
-
-    for transaction in transactions:
-        description = transaction.get('description', '').lower()
-
-        if search_term.lower() in description:
-            category_count[description] = category_count.get(description, 0) + 1
-    return category_count
-
-
-def count_description_occurrences(transactions, search_term):
-    """ Подсчитывает количество упоминаний описаний, содержащих строку поиска """
-    category_count = {}
-    for transaction in transactions:
-        description = transaction.get('description', '').lower()
-        if search_term.lower() in description:
-            category_count[description] = category_count.get(description, 0) + 1
-    return category_count
+def count_operations_by_category(transactions):
+    """Подсчитывает количество операций по категориям из списка транзакций."""
+    categories = [transaction.get('category', '') for transaction in transactions]
+    category_count = Counter(categories)
+    return dict(category_count)
