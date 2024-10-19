@@ -1,4 +1,7 @@
+import pandas as pd
 from src.utils import load_transactions_from_json
+from src.read_financial_transactions import read_financial_transactions_csv
+from src.read_financial_transactions import read_financial_transactions_excel
 from src.processing import filter_by_state, sort_by_date
 from src.generators import filter_by_currency
 from src.transaction import filter_transactions
@@ -6,40 +9,114 @@ from src.transaction import filter_transactions
 
 def main():
     print("Привет! Добро пожаловать в программу работы с банковскими транзакциями.")
-    print("Загрузка данных из файла...")
+    """Отвечает за основную логику проекта с пользователем,
+        связывает функциональности между собой."""
 
-    # Загрузка данных с использованием функций
-    file_path = 'transactions.json'
-    transactions = load_transactions_from_json(file_path)
+    print(
+        """Выберите необходимый пункт меню:
+    1. Получить информацию о транзакциях из JSON-файла
+    2. Получить информацию о транзакциях из CSV-файла
+    3. Получить информацию о транзакциях из XLSX-файла"""
+    )
+    choice = input("Введите номер пункта: ")
 
-    # Фильтрация по статусу
-    status = 'EXECUTED'  # Замените на нужный статус
-    filtered_transactions = filter_by_state(transactions, status)
-
-    if not filtered_transactions:
-        print("Не найдено ни одной транзакции, подходящей под ваши условия фильтрации по статусу.")
+    if choice == '1':
+        file_path = 'operations.json'
+        print("Для обработки выбран JSON-файл.")
+        transactions_file = load_transactions_from_json(file_path)
+    elif choice == '2':
+        file_path = 'transactions.csv'
+        print("Для обработки выбран CSV-файл.")
+        transactions_file = read_financial_transactions_csv(file_path)
+    elif choice == '3':
+        file_path = 'transactions_excel.xlsx'
+        print("Для обработки выбран XLSX-файл.")
+        transactions_file = read_financial_transactions_excel(file_path)
+    else:
+        print("Неверный выбор.")
         return
 
-    # Сортировка по дате
-    sorted_transactions = sort_by_date(filtered_transactions)
+    while True:
+        print("Введите статус, по которому необходимо выполнить фильтрацию.")
+        print("Доступные для фильтрации статусы: EXECUTED, CANCELED, PENDING")
+        status = input("Введите статус для фильтрации: ").upper()
 
-    # Фильтрация по валюте
-    sorted_currency_transactions = filter_by_currency(sorted_transactions, 'руб.')
+        if status != "EXECUTED" and status != "CANCELED" and status != "PENDING":
+            print(f"Статус операции {status} недоступен.")
+            continue
+        print(f"Операции отфильтрованы по статусу {status}")
+        filtered_transactions = filter_by_state(transactions_from_file, status)
+        break
 
-    # Фильтрация по слову в описании
-    keyword = 'покупка'  # Замените на нужное слово
-    final_transactions = filter_transactions(sorted_currency_transactions, keyword)
+        print("Отсортировать операции по дате? Да/Нет")
+        sort_choice = input("Введите да или нет: ").lower()
 
-    if not final_transactions:
-        print("Не найдено ни одной транзакции, подходящей под ваши условия фильтрации по описанию.")
-        return
+        if sort_choice == 'да':
+            print("Отсортировать по возрастанию или по убыванию?")
+            sort_order = input("Отсортировать по возрастанию или по убыванию? ").lower()
+            if sort_order == "в порядке убывания":
+                reversed = True
+                filtered_transactions = sort_by_date(filter_state, reversed)
+            elif sort_order == "в порядке возрастания":
+                reversed = False
+                filtered_transactions = sort_by_date(filter_state, reversed)
+            else:
+                print("Введен некорректный ответ.")
+                return
+        elif sort_order == "нет":
+            filtered_transactions = filter_state
+        else:
+            print("Введен некорректный ответ.")
+            return
 
-    # Вывод результатов
-    print("Распечатываю итоговый список транзакций...")
-    print(f"Всего банковских операций в выборке: {len(final_transactions)}\n")
+        print("Выводить только рублевые транзакции? Да/Нет")
+        currency_filter = input("Введите да или нет: ").lower()
+        if currency_filter == "да":
+            rub_trans = []
+            for trans in filtered_transactions:
+                if currency_filter == "1" or currency_filter == "2":
+                    if trans["operationAmount"]["currency"]["code"] == "RUB":
+                        rub_trans.append(trans)
+                else:
+                    if trans["currency_code"] == "RUB":
+                        rub_trans.append(trans)
+        elif currency_filter == "нет":
+            rub_trans = []
+            for trans in filtered_transactions:
+                rub_trans.append(trans)
+        else:
+            print("Введен некорректный ответ.")
+            return
 
-    for transaction in final_transactions:
+        print("Отфильтровать список транзакций по определенному слову в описании? Да/Нет")
+        filter_by_word = input("Введите да или нет: ").lower()
+        if filter_by_word == "да":
+            filter_by_word_yes = input("Введите слово для фильтрации: ")
+            trans_word = []
+            for trans in rub_trans:
+                if filter_by_word_yes in trans["description"]:
+                    trans_word.append(trans)
+        elif filter_by_word == "нет":
+            trans_word = []
+            for trans in rub_trans:
+                trans_word.append(trans)
+        else:
+            print("Введен некорректный ответ.")
+            return
+        if (len(trans_word)) == 0:
+            print("Не найдено ни одной транзакции, подходящей под ваши условия фильтрации")
+            return
+
+        print("Распечатываю итоговый список транзакций...")
+        print(f"Всего банковских операций в выборке: {len(trans_word)}\n")
+
+
+for transaction in trans_word:
         print(f"{transaction['date']} {transaction['description']}")
         print(f"Счет: {transaction['account']}")
         print(f"Сумма: {transaction['amount']} {transaction['currency']}")
         print()
+
+
+if __name__ == "__main__":
+    main()
