@@ -1,10 +1,7 @@
-import pandas as pd
 from src.utils import load_transactions_from_json
 from src.read_financial_transactions import read_financial_transactions_csv
 from src.read_financial_transactions import read_financial_transactions_excel
 from src.processing import filter_by_state, sort_by_date
-from src.generators import filter_by_currency
-from src.transaction import filter_transactions
 
 
 def main():
@@ -21,15 +18,15 @@ def main():
     choice = input("Введите номер пункта: ")
 
     if choice == '1':
-        file_path = 'operations.json'
+        file_path = '../data/operations.json'
         print("Для обработки выбран JSON-файл.")
         transactions_file = load_transactions_from_json(file_path)
     elif choice == '2':
-        file_path = 'transactions.csv'
+        file_path = '../data/transactions.csv'
         print("Для обработки выбран CSV-файл.")
         transactions_file = read_financial_transactions_csv(file_path)
     elif choice == '3':
-        file_path = 'transactions_excel.xlsx'
+        file_path = '../data/transactions_excel.xlsx'
         print("Для обработки выбран XLSX-файл.")
         transactions_file = read_financial_transactions_excel(file_path)
     else:
@@ -45,7 +42,7 @@ def main():
             print(f"Статус операции {status} недоступен.")
             continue
         print(f"Операции отфильтрованы по статусу {status}")
-        filtered_transactions = filter_by_state(transactions_from_file, status)
+        filtered_transactions = filter_by_state(transactions_file, status)
         break
 
         print("Отсортировать операции по дате? Да/Нет")
@@ -55,11 +52,11 @@ def main():
             print("Отсортировать по возрастанию или по убыванию?")
             sort_order = input("Отсортировать по возрастанию или по убыванию? ").lower()
             if sort_order == "в порядке убывания":
-                reversed = True
-                filtered_transactions = sort_by_date(filter_state, reversed)
+                reverse = True
+                filtered_transactions = sort_by_date(transactions_file, reverse)
             elif sort_order == "в порядке возрастания":
-                reversed = False
-                filtered_transactions = sort_by_date(filter_state, reversed)
+                reverse = False
+                filtered_transactions = sort_by_date(transactions_file, reverse)
             else:
                 print("Введен некорректный ответ.")
                 return
@@ -110,12 +107,11 @@ def main():
         print("Распечатываю итоговый список транзакций...")
         print(f"Всего банковских операций в выборке: {len(trans_word)}\n")
 
-
-for transaction in trans_word:
-        print(f"{transaction['date']} {transaction['description']}")
-        print(f"Счет: {transaction['account']}")
-        print(f"Сумма: {transaction['amount']} {transaction['currency']}")
-        print()
+        for transaction in filtered_transactions:
+            print(f"{transaction['date']} {transaction['description']}")
+            print(f"Счет: {transaction['account']}")
+            print(f"Сумма: {transaction['amount']} {transaction['currency']}")
+            print()
 
 
 if __name__ == "__main__":
