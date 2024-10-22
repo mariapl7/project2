@@ -2,6 +2,7 @@ from src.utils import load_transactions_from_json
 from src.read_financial_transactions import read_financial_transactions_csv
 from src.read_financial_transactions import read_financial_transactions_excel
 from src.processing import filter_by_state, sort_by_date
+from generators import filter_by_currency
 
 
 def main():
@@ -55,10 +56,10 @@ def main():
         sort_order = input("Отсортировать по возрастанию или по убыванию? ").lower()
         if sort_order == "в порядке убывания":
             reverse = True
-            filtered_transactions = sort_by_date(transactions_file, reverse)
+            filtered_transactions = sort_by_date(filtered_transactions, reverse)
         elif sort_order == "в порядке возрастания":
             reverse = False
-            filtered_transactions = sort_by_date(transactions_file, reverse)
+            filtered_transactions = sort_by_date(filtered_transactions, reverse)
         else:
             print("Введен некорректный ответ.")
             return
@@ -69,21 +70,12 @@ def main():
     print("Выводить только рублевые транзакции? Да/Нет")
     currency_filter = input("Введите да или нет: ").lower()
     if currency_filter == "да":
-        rub_trans = []
-        for trans in filtered_transactions:
-            if currency_filter == "1" or currency_filter == "2":
-                if trans["operationAmount"]["currency"]["code"] == "RUB":
-                    rub_trans.append(trans)
-            else:
-                if trans["currency_code"] == "RUB":
-                    rub_trans.append(trans)
+        filtered_transactions = list(filter_by_currency(filtered_transactions, "RUB"))
     elif currency_filter == "нет":
-        rub_trans = []
-        for trans in filtered_transactions:
-            rub_trans.append(trans)
-        else:
-            print("Введен некорректный ответ.")
-            return
+        pass
+    else:
+        print("Введен некорректный ответ.")
+        return
 
     print("Отфильтровать список транзакций по определенному слову в описании? Да/Нет")
     filter_by_word = input("Введите да или нет: ").lower()
